@@ -37,6 +37,13 @@ pipeline{
                 }
             }
         }
+
+        stage("Source Composition Analysis"){
+            steps{
+                echo "[*] INFO : Performing Source Composition Analysis"
+                dependencyCheck additionalArguments: '', odcInstallation: 'dependency-checker'
+            }
+        }
     }
     post{
         always{
