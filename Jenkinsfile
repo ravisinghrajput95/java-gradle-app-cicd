@@ -12,9 +12,15 @@ pipeline{
             steps{
                 echo "[*] INFO : Sonar Analysis is in progress"
                 script{
-                    withSonarQubeEnv(credentialsId: 'sonar-server'){
+                    withSonarQubeEnv(credentialsId: 'sonartoken'){
                         sh 'chmod +x gradlew'
                         sh './gradlew sonarqube'
+                    }
+                    timeout(time: 15, unit: 'MINUTES') {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                        }
                     }
                 }
             }
