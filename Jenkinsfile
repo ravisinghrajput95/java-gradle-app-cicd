@@ -8,6 +8,15 @@ pipeline{
             }
         }
 
+        stage("Git-secrets"){
+            steps{
+                echo "[*] INFO : Validating commited secrets on to the Version Control"
+                sh 'rm trufflehog || true'
+                sh 'docker run gesellix/trufflehog --json https://github.com/ravisinghrajput95/java-gradle-app-cicd.git > trufflehog'
+                sh 'cat trufflehog'
+            }
+        }
+
         stage("Sonar Analysis"){
             steps{
                 echo "[*] INFO : Sonar Analysis is in progress"
