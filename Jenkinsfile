@@ -17,12 +17,19 @@ pipeline{
             }
         }
 
+        stage("Unit tests"){
+            steps{
+                echo "[*] INFO : Performing unit tests on the Source code"
+                sh 'chmod +x gradlew'
+                sh './gradlew test'
+            }
+        }
+
         stage("Sonar Analysis"){
             steps{
                 echo "[*] INFO : Sonar Analysis is in progress"
                 script{
                     withSonarQubeEnv(credentialsId: 'sonartoken'){
-                        sh 'chmod +x gradlew'
                         sh './gradlew sonarqube'
                     }
                 }
@@ -47,13 +54,25 @@ pipeline{
     }
     post{
         always{
-            echo "========always========"
+            echo "[EMAIL] Email  notifications"
+            mail bcc: '', body: "<br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", cc: '', charset: 'UTF-8', from: '', mimeType: 'text/html', replyTo: '', subject: "${currentBuild.result} CI: Project name -> ${env.JOB_NAME}", to: "ravisinghrajput005@gmail.com";  
         }
         success{
-            echo "========pipeline executed successfully ========"
+            echo "[SUCCESS] Pipeline executed successfully  "
+            slackSend color: "good", message: "Status: Pipeline executed successfully  | Job: ${env.JOB_NAME} | Build number ${env.BUILD_NUMBER} "
         }
         failure{
-            echo "========pipeline execution failed========"
+            echo "[FAILED] pipeline execution failed   "
+            slackSend color: "danger", message: "Status: pipeline execution failed | Job: ${env.JOB_NAME} | Build number ${env.BUILD_NUMBER} "
+
+        }
+        unstable{
+            echo "[UNSTABLE] Build is unstable   "
+            slackSend color: "yellow", message: "Status: Build is unstable  | Job: ${env.JOB_NAME} | Build number ${env.BUILD_NUMBER} "
+        }
+        aborted{
+            echo "[UNSTABLE] Build was aborted   "
+            slackSend color: "yellow", message: "Build was aborted  | Job: ${env.JOB_NAME} | Build number ${env.BUILD_NUMBER} "
         }
     }
 }
