@@ -107,6 +107,7 @@ pipeline{
 
         stage("Helm charts config validation"){
             steps{
+                echo "[*] INFO : Validating misconfigs as per policies in Datree"
                 script{
                     dir('helm-charts/'){
                         withEnv(['DATREE_TOKEN=ao1RpL3G3LMRL6eucy37hv']){
@@ -116,6 +117,22 @@ pipeline{
                 }
             }
         }
+
+        stage("Push Helm charts to Nexus"){
+            steps{
+                echo "[*] INFO : Pushing Helm charts to Nexus"
+                script{
+                    withCredentials([string(credentialsId: 'nexus', variable: 'nexus')]) {
+                        dir("helm-charts"){
+                                                    sh '''
+ 
+                        '''
+
+                    }
+                }
+            }
+        }
+    }
 
           
     }
