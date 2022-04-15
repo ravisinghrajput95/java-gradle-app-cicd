@@ -127,7 +127,7 @@ pipeline{
                           sh '''
                             chartversion=$(helm show chart java-app | grep version | cut -d: -f 2 | tr -d ' ')
                             tar -czvf  java-app-${chartversion}.tgz java-app/
-                            curl -u admin:$nexus http://34.118.94.54:8081/repository/helm-hosted/ --upload-file java-app-${chartversion}.tgz -v
+                            curl -u admin:$nexus http://34.118.94.54:8081/repository/java-gradle-helm-hosted/ --upload-file java-app-${chartversion}.tgz -v
                         '''
 
                     }
