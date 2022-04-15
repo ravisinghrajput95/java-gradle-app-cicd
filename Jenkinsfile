@@ -73,6 +73,13 @@ pipeline{
                 sh 'docker build -t 34.118.94.54:8082/java_gradle:$GIT_COMMIT_HASH . '
             }
         }
+
+        stage("Image Scan"){
+            steps{
+                echo "[*] INFO : Scanning images using Trivy.."
+                sh 'trivy image 34.118.94.54:8082/java_gradle:$GIT_COMMIT_HASH '
+            }
+        }
           
     }
     post{
