@@ -80,6 +80,19 @@ pipeline{
                 sh 'trivy image 34.118.94.54:8082/java_gradle:$GIT_COMMIT_HASH '
             }
         }
+
+        stage("Push image to Nexus"){
+            steps{
+                echo "[*] INFO : Pushing image to Nexus.."
+                script{
+                    withCredentials([string(credentialsId: 'nexus', variable: 'nexus')]) {
+                        sh '''
+                          docker login -u admin -p $nexus 34.118.94.54:8082/java_gradle:$GIT_COMMIT_HASH
+                        '''
+                    }
+                }
+            }
+        }
           
     }
     post{
