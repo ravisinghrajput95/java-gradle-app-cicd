@@ -1,5 +1,19 @@
+def getVersion(){
+    def commitHash =  sh returnStdout: true, script: 'git rev-parse --short HEAD'
+    return commitHash
+}
+
 pipeline{
     agent any
+
+    options{
+        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
+    }
+
+    environment{
+        GIT_COMMIT_HASH = getVersion()
+    }
+
     stages{
         stage("Code Checkout"){
             steps{
@@ -51,10 +65,18 @@ pipeline{
                 dependencyCheck additionalArguments: '', odcInstallation: 'dependency-checker'
             }
         }
+
+        stage("Docker build"){
+            steps{
+                echo "[*] INFO : Docker build in progress.."
+                docker build -t 34.118.94.54:8082/java_gradle:$GIT_COMMIT_HASH .
+            }
+        }
+          
     }
     post{
         always{
-            echo "[EMAIL] Email  notifications"
+            echo "[ALWAYS] Email  notifications"
             mail bcc: '', body: "<br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", cc: '', charset: 'UTF-8', from: '', mimeType: 'text/html', replyTo: '', subject: "${currentBuild.result} CI: Project name -> ${env.JOB_NAME}", to: "ravisinghrajput005@gmail.com";  
         }
         success{
@@ -71,8 +93,8 @@ pipeline{
             slackSend color: "yellow", message: "Status: Build is unstable  | Job: ${env.JOB_NAME} | Build number ${env.BUILD_NUMBER} "
         }
         aborted{
-            echo "[UNSTABLE] Build was aborted   "
-            slackSend color: "yellow", message: "Build was aborted  | Job: ${env.JOB_NAME} | Build number ${env.BUILD_NUMBER} "
+            echo "[ABORTED] Build was aborted   "
+            slackSend color: "yellow", message: "Status: Build was aborted  | Job: ${env.JOB_NAME} | Build number ${env.BUILD_NUMBER} "
         }
     }
 }
