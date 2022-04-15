@@ -88,6 +88,7 @@ pipeline{
                     withCredentials([string(credentialsId: 'nexus', variable: 'nexus')]) {
                         sh '''
                           docker login -u admin -p $nexus 34.118.94.54:8082/java_gradle:$GIT_COMMIT_HASH
+                          docker push 34.118.94.54:8082/java_gradle:$GIT_COMMIT_HASH
                         '''
                     }
                 }
