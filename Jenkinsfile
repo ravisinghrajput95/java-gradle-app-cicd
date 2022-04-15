@@ -70,7 +70,7 @@ pipeline{
         stage("Docker build"){
             steps{
                 echo "[*] INFO : Docker build in progress.."
-                sh 'docker build -t 34.118.94.54:8082/java_gradle:$GIT_COMMIT_HASH' .
+                sh 'docker build -t 34.118.94.54:8082/java_gradle:$GIT_COMMIT_HASH . '
             }
         }
           
