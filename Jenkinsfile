@@ -63,13 +63,14 @@ pipeline{
             steps{
                 echo "[*] INFO : Performing Source Composition Analysis"
                 dependencyCheck additionalArguments: '', odcInstallation: 'dependency-checker'
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
 
         stage("Docker build"){
             steps{
                 echo "[*] INFO : Docker build in progress.."
-                docker build -t 34.118.94.54:8082/java_gradle:$GIT_COMMIT_HASH .
+                sh 'docker build -t 34.118.94.54:8082/java_gradle:$GIT_COMMIT_HASH' .
             }
         }
           
