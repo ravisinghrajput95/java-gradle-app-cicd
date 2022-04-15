@@ -98,8 +98,10 @@ pipeline{
         stage("Teardown"){
             steps{
                 echo "[*] INFO : Removing Docker images after they are pushed to Nexus"
-                docker rmi 34.118.94.54:8082/java_gradle:$GIT_COMMIT_HASH
-                docker image prune -f
+                sh ''' 
+                  docker rmi 34.118.94.54:8082/java_gradle:$GIT_COMMIT_HASH
+                  docker image prune -f
+                '''
             }
         }
 
@@ -114,7 +116,7 @@ pipeline{
                 }
             }
         }
-        
+
           
     }
     post{
